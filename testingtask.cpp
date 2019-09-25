@@ -5,6 +5,7 @@ TestingTask::TestingTask(const QString &name)
     : m_name(name)
     , m_state(TestingInterface::INCOMPLETE)
     , m_conditionsHaveBeenMet(false)
+    , m_watchdogEnabled(false)
 {
     m_conditional = [](){
         return true;
@@ -15,6 +16,7 @@ TestingTask::TestingTask(const QString &name)
     m_evaluate = [](TestingInterface::Results){
         return false;
     };
+    setTimeout(DEFAULT_TIMEOUT);
 }
 
 void TestingTask::setCondition(std::function<bool ()> cond)
@@ -32,9 +34,15 @@ void TestingTask::setEvaluation(std::function<bool (TestingInterface::Results)> 
     m_evaluate = eval;
 }
 
+void TestingTask::setTimeout(int timeout)
+{
+    m_timeout = timeout;
+}
+
 void TestingTask::tick()
 {
-    if (m_conditional()) {
+    if (m_conditional() == true) {
+        //qDebug() << "Enter conditional";
         m_conditionsHaveBeenMet = true;
         m_results = m_measure();
         if (!m_results.empty()) {
@@ -42,11 +50,17 @@ void TestingTask::tick()
                 TestingInterface::PASSED:
                 TestingInterface::FAILED;
         }
-    } else if (m_conditionsHaveBeenMet){
+    } else if (m_conditionsHaveBeenMet) {
+        //qDebug() << "Enter disqualify";
         m_state = TestingInterface::DISQUALIFIED;
-    } else if (false) {
-        // TODO: Implement watchdog option
+    } else if (m_watchdog.elapsed() >= m_timeout) {
+        //qDebug() << "Enter timeout";
         m_state = TestingInterface::TIMEOUT;
+    } else {
+        //qDebug() << "Enter enable wd";
+        //qDebug() << QString::number(m_watchdog.elapsed());
+        //qDebug() << QString::number(m_timeout);
+        enableWatchdog();
     }
 }
 
@@ -65,4 +79,22 @@ TestingInterface::States TestingTask::state()
 TestingInterface::Results TestingTask::results() const
 {
     return m_results;
+}
+
+int TestingTask::lift() const
+{
+    return isFinished() ? m_timeout : 0;
+}
+
+int TestingTask::weight() const
+{
+    return m_timeout;
+}
+
+void TestingTask::enableWatchdog()
+{
+    if (!m_watchdogEnabled) {
+        m_watchdog.start();
+        m_watchdogEnabled = true;
+    }
 }

@@ -11,14 +11,10 @@ public:
 
     States state();
     Results results() const;
+    double progress();
 
-    double operator%(const TestingComposite &p) {
-        auto completed = std::count_if(state().begin(), state().end(),
-        [](State *state){
-            return (*state != INCOMPLETE);
-        });
-        return static_cast<double>(completed*100)/state().size();
-    }
+    int lift() const;
+    int weight() const;
 
 private:
     std::vector<TestingInterface*> m_children;

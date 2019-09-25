@@ -19,8 +19,12 @@ public:
         TIMEOUT,
     };
     typedef QMap<QString, State*> States;
-    virtual States state() = 0; // Should contain references to reduce computing as this function might be called frequently
+    virtual States state() = 0;
     typedef QVariantMap Results;
     virtual Results results() const = 0;
+
+    virtual int lift() const = 0;
+    virtual int weight() const = 0;
+
 };
 

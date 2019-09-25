@@ -48,5 +48,39 @@ TestingInterface::Results TestingComposite::results() const
     return container;
 }
 
+double TestingComposite::progress()
+{
+    if (state().size() < 1) {
+        return 100.0;
+    }
+    qDebug() << QString("Size %0").arg(state().size());
+    int completed = std::count_if(state().begin(), state().end(),
+    [](TestingInterface::State *&state){
+        //return (*state != INCOMPLETE);
+            return true;
+    });
+    qDebug() << QString("Completed %0").arg(completed);
+    return static_cast<double>(completed*100)/state().size();
+}
+
+int TestingComposite::lift() const
+{
+    int lift = 0;
+    for (const auto& test : m_children) {
+        lift += test->lift();
+    }
+    return lift;
+}
+
+int TestingComposite::weight() const
+{
+    int weight = 0;
+    for (const auto& test : m_children) {
+        weight += test->weight();
+    }
+    return weight;
+}
+
+
 
 
