@@ -1,5 +1,4 @@
 #pragma once
-#include <QtCore>
 #include <QVariantMap>
 #include <QMap>
 #include <vector>

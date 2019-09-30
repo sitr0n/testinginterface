@@ -13,12 +13,14 @@ set(testing_SOURCES
     testinginterface.cpp
     testingtask.cpp
     testingcomposite.cpp
+    palm.cpp
 )
 
 set(testing_HEADERS
     testinginterface.h
     testingtask.h
     testingcomposite.h
+    palm.h
 )
 
 qt5_wrap_cpp(TESTING_QT_HEADERS_MOC ${testing_HEADERS})

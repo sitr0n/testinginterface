@@ -13,7 +13,7 @@ TestingTask::TestingTask(const QString &name)
     m_measure = [](){
         return TestingInterface::Results();
     };
-    m_evaluate = [](TestingInterface::Results){
+    m_assert = [](TestingInterface::Results){
         return false;
     };
     setTimeout(DEFAULT_TIMEOUT);
@@ -29,9 +29,9 @@ void TestingTask::setMeasuring(std::function<TestingInterface::Results ()> meas)
     m_measure = meas;
 }
 
-void TestingTask::setEvaluation(std::function<bool (TestingInterface::Results)> eval)
+void TestingTask::setAssertion(std::function<bool (TestingInterface::Results)> assert)
 {
-    m_evaluate = eval;
+    m_assert = assert;
 }
 
 void TestingTask::setTimeout(int timeout)
@@ -46,7 +46,7 @@ void TestingTask::tick()
         m_conditionsHaveBeenMet = true;
         m_results = m_measure();
         if (!m_results.empty()) {
-            m_state = m_evaluate(m_results) ?
+            m_state = m_assert(m_results) ?
                 TestingInterface::PASSED:
                 TestingInterface::FAILED;
         }

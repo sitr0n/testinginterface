@@ -1,4 +1,5 @@
 #include "testingcomposite.h"
+#include <QDebug>
 
 void TestingComposite::add(TestingInterface *test)
 {
@@ -53,14 +54,7 @@ double TestingComposite::progress()
     if (state().size() < 1) {
         return 100.0;
     }
-    qDebug() << QString("Size %0").arg(state().size());
-    int completed = std::count_if(state().begin(), state().end(),
-    [](TestingInterface::State *&state){
-        //return (*state != INCOMPLETE);
-            return true;
-    });
-    qDebug() << QString("Completed %0").arg(completed);
-    return static_cast<double>(completed*100)/state().size();
+    return static_cast<double>(lift()*100)/weight();
 }
 
 int TestingComposite::lift() const

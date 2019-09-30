@@ -14,7 +14,7 @@ public:
      * is allowed to run */
     void setCondition(std::function<bool()> cond);
     void setMeasuring(std::function<Results()> meas);
-    void setEvaluation(std::function<bool(Results)> eval);
+    void setAssertion(std::function<bool(Results)> assert);
     void setTimeout(int timeout);
 
     void tick();
@@ -35,7 +35,7 @@ private:
 
     std::function<bool ()> m_conditional;
     std::function<Results ()> m_measure;
-    std::function<bool (Results)> m_evaluate;
+    std::function<bool (Results)> m_assert;
 
     QTime m_watchdog;
     int m_timeout;
