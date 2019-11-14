@@ -4,6 +4,7 @@
 class TestingComposite : public TestingInterface
 {
 public:
+    ~TestingComposite();
     void add(TestingInterface *test);
 
     void tick();
@@ -15,6 +16,8 @@ public:
 
     int lift() const;
     int weight() const;
+
+    void reset();
 
 private:
     std::vector<TestingInterface*> m_children;

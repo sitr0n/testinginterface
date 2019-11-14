@@ -1,12 +1,13 @@
 #pragma once
-#include <QVariantMap>
 #include <QMap>
-#include <vector>
+#include <QVariantMap>
+//#include <vector>
 
 
 class TestingInterface
 {
 public:
+    virtual ~TestingInterface() {}
     virtual void tick() = 0;
     virtual bool isFinished() const = 0;
 
@@ -25,5 +26,6 @@ public:
     virtual int lift() const = 0;
     virtual int weight() const = 0;
 
+    virtual void reset() = 0;
 };
 

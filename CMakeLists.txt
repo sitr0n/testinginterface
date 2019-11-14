@@ -7,13 +7,15 @@ else()
     add_compile_options(-std=c++11)
 endif()
 
-find_package(Qt5 REQUIRED Core)
+find_package(Qt5 REQUIRED Core Widgets)
 
 set(testing_SOURCES
     testinginterface.cpp
     testingtask.cpp
     testingcomposite.cpp
     palm.cpp
+    qtestingpanel.cpp
+    #testingworker.cpp
 )
 
 set(testing_HEADERS
@@ -21,6 +23,8 @@ set(testing_HEADERS
     testingtask.h
     testingcomposite.h
     palm.h
+    qtestingpanel.h
+    #testingworker.h
 )
 
 qt5_wrap_cpp(TESTING_QT_HEADERS_MOC ${testing_HEADERS})
@@ -28,4 +32,5 @@ qt5_wrap_cpp(TESTING_QT_HEADERS_MOC ${testing_HEADERS})
 add_library (testing ${testing_SOURCES} ${TESTING_QT_HEADERS_MOC})
 target_link_libraries(testing
     Qt5::Core
+    Qt5::Widgets
 )

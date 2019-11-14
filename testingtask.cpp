@@ -7,15 +7,16 @@ TestingTask::TestingTask(const QString &name)
     , m_conditionsHaveBeenMet(false)
     , m_watchdogEnabled(false)
 {
-    m_conditional = [](){
+    m_conditional = []{
         return true;
     };
-    m_measure = [](){
+    m_measure = []{
         return TestingInterface::Results();
     };
     m_assert = [](TestingInterface::Results){
-        return false;
+        return true;
     };
+    m_teardown = [](){};
     setTimeout(DEFAULT_TIMEOUT);
 }
 
@@ -34,6 +35,11 @@ void TestingTask::setAssertion(std::function<bool (TestingInterface::Results)> a
     m_assert = assert;
 }
 
+void TestingTask::setTearDown(std::function<void ()> teardown)
+{
+    m_teardown = teardown;
+}
+
 void TestingTask::setTimeout(int timeout)
 {
     m_timeout = timeout;
@@ -42,7 +48,6 @@ void TestingTask::setTimeout(int timeout)
 void TestingTask::tick()
 {
     if (m_conditional() == true) {
-        //qDebug() << "Enter conditional";
         m_conditionsHaveBeenMet = true;
         m_results = m_measure();
         if (!m_results.empty()) {
@@ -51,16 +56,14 @@ void TestingTask::tick()
                 TestingInterface::FAILED;
         }
     } else if (m_conditionsHaveBeenMet) {
-        //qDebug() << "Enter disqualify";
         m_state = TestingInterface::DISQUALIFIED;
-    } else if (m_watchdog.elapsed() >= m_timeout) {
-        //qDebug() << "Enter timeout";
+    } else if (m_watchdogEnabled && (m_watchdog.elapsed() >= m_timeout)) {
         m_state = TestingInterface::TIMEOUT;
     } else {
-        //qDebug() << "Enter enable wd";
-        //qDebug() << QString::number(m_watchdog.elapsed());
-        //qDebug() << QString::number(m_timeout);
         enableWatchdog();
+    }
+    if (isFinished()) {
+        m_teardown();
     }
 }
 
@@ -89,6 +92,13 @@ int TestingTask::lift() const
 int TestingTask::weight() const
 {
     return m_timeout;
+}
+
+void TestingTask::reset()
+{
+    m_state = TestingInterface::INCOMPLETE;
+    m_conditionsHaveBeenMet = false;
+    m_watchdogEnabled = false;
 }
 
 void TestingTask::enableWatchdog()

@@ -1,6 +1,11 @@
 #include "testingcomposite.h"
 #include <QDebug>
 
+TestingComposite::~TestingComposite()
+{
+    // TODO: delete children
+}
+
 void TestingComposite::add(TestingInterface *test)
 {
     m_children.push_back(test);
@@ -73,6 +78,13 @@ int TestingComposite::weight() const
         weight += test->weight();
     }
     return weight;
+}
+
+void TestingComposite::reset()
+{
+    for (auto& test : m_children) {
+        test->reset();
+    }
 }
 
 
